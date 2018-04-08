@@ -1,46 +1,49 @@
-export default class TodoAppApiService {
-  apiURL = 'https://elixirtodoapp.herokuapp.com/api'
+import AuthService from '@/services/AuthService'
 
-  constructor (jwt) {
-    this.jwt = jwt
+export default class TodoAppApiService {
+  constructor () {
+    this.apiURL = 'https://elixirtodoapp.herokuapp.com/api'
+    this.authService = new AuthService()
   }
 
   getTodos () {
     return fetch(this.apiURL + '/get',
       {
         method: 'GET',
-        headers: {
-          'Authorization': this.jwt,
+        headers: new Headers({
+          'Authorization': this.authService.getAuthToken(),
           'content-type': 'application/json'
-        }
-      }).then(response => response.json())
+        })
+      })
+      .then(response => response.json())
+      .then(json => json)
   }
 
   addTodo (todoText) {
     return fetch(this.apiURL + '/create',
       {
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           todolistitem: { text: todoText }
-        },
-        headers: {
-          'Authorization': this.jwt,
+        }),
+        headers: new Headers({
+          'Authorization': this.authService.getAuthToken(),
           'content-type': 'application/json'
-        }
+        })
       }).then(response => response.json())
   }
 
-  editTodo (todoText) {
-    return fetch(this.apiURL + '/edit/',
+  editTodo (todoId, todoText) {
+    return fetch(this.apiURL + '/edit/' + todoId,
       {
         method: 'PUT',
-        body: {
+        body: JSON.stringify({
           todolistitem: { text: todoText }
-        },
-        headers: {
-          'Authorization': this.jwt,
+        }),
+        headers: new Headers({
+          'Authorization': this.authService.getAuthToken(),
           'content-type': 'application/json'
-        }
+        })
       }).then(response => response.json())
   }
 
@@ -48,11 +51,10 @@ export default class TodoAppApiService {
     return fetch(this.apiURL + '/delete/' + todoId,
       {
         method: 'DELETE',
-        headers: {
-          'Authorization': this.jwt,
+        headers: new Headers({
+          'Authorization': this.authService.getAuthToken(),
           'content-type': 'application/json'
-        }
+        })
       }).then(response => response.json())
   }
-
 }

@@ -1,34 +1,34 @@
 export default class AuthService {
-  authURL = 'https://elixirtodoapp.herokuapp.com/auth'
-  jwt = ''
+  constructor () {
+    this.authURL = 'https://elixirtodoapp.herokuapp.com/auth'
+  }
 
-  login (googleProfile, googleIDToken) {
+  login (googleIDToken) {
     return fetch(this.authURL + '/login',
       {
         method: 'POST',
         body: JSON.stringify({
-          user: {
-            name: googleProfile.getName(),
-            oauth_id: googleProfile.getId(),
-            avatar: googleProfile.getImageUrl(),
-            email: googleProfile.getEmail(),
-            token: googleIDToken
-          }
+          token: googleIDToken
         }),
         headers: new Headers({
           'content-type': 'application/json'
         })
-      }).then(response => response.json(), error => console.log(error))
+      })
+      .then(response => response.json())
+      .then(jsonResp => {
+        localStorage.setItem('authToken', jsonResp.jwt)
+      })
+  }
+
+  isLoggedIn () {
+    return this.getAuthToken() !== null
+  }
+
+  getAuthToken () {
+    return localStorage.getItem('authToken')
   }
 
   logout () {
-    return fetch(this.authURL + '/logout', {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'content-type': 'application/json',
-        'Authorization': this.jwt
-      }
-    }).then(response => response.json())
+    localStorage.removeItem('authToken')
   }
 }
