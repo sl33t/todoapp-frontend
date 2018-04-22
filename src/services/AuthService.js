@@ -1,6 +1,9 @@
+import store from '@/store'
+
 export default class AuthService {
   constructor () {
     this.authURL = 'https://elixirtodoapp.herokuapp.com/auth'
+    this.store = store
   }
 
   login (googleIDToken) {
@@ -30,5 +33,6 @@ export default class AuthService {
 
   logout () {
     localStorage.removeItem('authToken')
+    this.store.commit('user/logout')
   }
 }

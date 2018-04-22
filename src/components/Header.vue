@@ -1,14 +1,14 @@
 <template>
   <header>
-    <img src="../assets/logo.png">
+    <h1>Ricky Catron: TodoApp</h1>
     <g-signin-button
       v-if="!isLoggedIn"
       :params="googleSignInParams"
-      @success="onSignInSuccess"
-      @error="onSignInError">
+      @success="login"
+      @error="onLoginError">
       Sign in with Google
     </g-signin-button>
-    <button @click="logout()" v-if="isLoggedIn">Logout</button>
+    <div class="g-signin-button" @click="logout()" v-if="isLoggedIn">Logout</div>
   </header>
 </template>
 
@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    onSignInSuccess (googleUser) {
+    login (googleUser) {
       authApi.login(googleUser.getAuthResponse().id_token).then(() => {
         preloadApi.preloadAll().then(() => {
           this.$router.push('Dashboard')
@@ -48,13 +48,12 @@ export default {
         console.log('My Auth Failure')
       })
     },
-    onSignInError (error) {
+    onLoginError (error) {
       // Hanlde Googles Auth Failure
       console.log('Google Auth Failure', error)
     },
     logout () {
       authApi.logout()
-      this.$store.commit('user/logout')
       this.$router.push('Landing')
     }
   }
@@ -62,12 +61,24 @@ export default {
 </script>
 
 <style scoped>
-.g-signin-button {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 3px;
-  background-color: #3c82f7;
-  color: #fff;
-  box-shadow: 0 3px 0 #0f69ff;
-}
+  header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--DARK-PRIMARY-COLOR);
+    color: var(--WHITE-COLOR);
+  }
+
+  .g-signin-button {
+    background-color: var(--ACCENT-COLOR);
+    border-radius: .5rem;
+    padding: .5rem .8rem;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 0 .1rem var(--PRIMARY-TEXT-COLOR);
+  }
+
+  .g-signin-button:active {
+    background-color: var(--DARKER-ACCENT-COLOR);
+  }
 </style>
